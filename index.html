@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mohamed Zanik Zuhri — Network Engineer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+:root{
+  --bg:#070d14;
+  --bg2:#0c1520;
+  --bg3:#0f1e2e;
+  --cyan:#00d4ff;
+  --cyan-dim:#0a4a5c;
+  --green:#00ff88;
+  --green-dim:#003322;
+  --amber:#ffaa00;
+  --red:#ff3355;
+  --text:#a8c5d8;
+  --text-bright:#d4eaf7;
+  --border:rgba(0,212,255,0.15);
+  --glow:0 0 20px rgba(0,212,255,0.3);
+  --glow-strong:0 0 40px rgba(0,212,255,0.5);
+}
+
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+.cur{position:fixed;top:0;left:0;width:6px;height:6px;background:var(--cyan);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 10px var(--cyan);transition:width .2s,height .2s;}
+.cur-ring{position:fixed;top:0;left:0;width:32px;height:32px;border:1px solid var(--cyan);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);opacity:.4;transition:width .3s,height .3s,opacity .3s;}
+
+/* SCANLINES */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9990;}
+
+/* CANVAS NETWORK BG */
+#netCanvas{position:fixed;inset:0;z-index:0;opacity:.35;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.5rem 4rem;border-bottom:1px solid var(--border);background:rgba(7,13,20,0.85);backdrop-filter:blur(12px);}
+.nav-id{display:flex;align-items:center;gap:1rem;}
+.nav-status{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;box-shadow:0 0 8px var(--green);}
+.nav-name{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;color:var(--cyan);letter-spacing:.1em;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--text);font-size:.8rem;letter-spacing:.15em;text-transform:uppercase;font-family:'Share Tech Mono',monospace;transition:color .3s;position:relative;}
+.nav-links a::before{content:'> ';color:var(--cyan);opacity:0;transition:opacity .3s;}
+.nav-links a:hover{color:var(--cyan);}
+.nav-links a:hover::before{opacity:1;}
+.nav-badge{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--green);border:1px solid var(--green);padding:.2rem .6rem;letter-spacing:.1em;}
+
+/* HERO VIDEO */
+.hero-video-wrap{position:absolute;inset:0;z-index:0;overflow:hidden;}
+.hero-video{width:100%;height:100%;object-fit:cover;object-position:center;filter:saturate(0.4) brightness(0.3);}
+.hero-video-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(7,13,20,0.93) 0%,rgba(7,13,20,0.55) 55%,rgba(7,13,20,0.88) 100%);}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;z-index:1;padding:0 4rem;overflow:hidden;}
+.hero-inner{max-width:1400px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative;z-index:2;}
+.hero-left{}
+.hero-tag{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--cyan);letter-spacing:.25em;text-transform:uppercase;display:flex;align-items:center;gap:.8rem;margin-bottom:2rem;opacity:0;animation:fadeIn .8s .3s forwards;}
+.hero-tag::before{content:'';width:40px;height:1px;background:var(--cyan);}
+.hero-title{font-family:'Orbitron',monospace;font-size:clamp(2.5rem,5vw,4.2rem);font-weight:900;line-height:1.05;color:var(--text-bright);margin-bottom:1.5rem;opacity:0;animation:fadeIn .8s .5s forwards;}
+.hero-title span{color:var(--cyan);text-shadow:var(--glow);}
+.hero-title .blink{animation:blink 1.2s step-end infinite;color:var(--cyan);}
+.hero-sub{font-size:1rem;color:var(--text);line-height:1.7;max-width:460px;margin-bottom:3rem;font-weight:300;opacity:0;animation:fadeIn .8s .7s forwards;}
+.hero-btns{display:flex;gap:1.5rem;flex-wrap:wrap;opacity:0;animation:fadeIn .8s .9s forwards;}
+.btn-primary{background:transparent;border:1px solid var(--cyan);color:var(--cyan);padding:.9rem 2.2rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;position:relative;overflow:hidden;transition:color .3s;cursor:none;}
+.btn-primary::before{content:'';position:absolute;inset:0;background:var(--cyan);transform:translateX(-100%);transition:transform .3s;z-index:-1;}
+.btn-primary:hover{color:var(--bg);}
+.btn-primary:hover::before{transform:translateX(0);}
+.btn-secondary{background:transparent;border:1px solid var(--border);color:var(--text);padding:.9rem 2.2rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:border-color .3s,color .3s;cursor:none;}
+.btn-secondary:hover{border-color:var(--green);color:var(--green);}
+
+/* TERMINAL CARD */
+.terminal{background:var(--bg2);border:1px solid var(--border);position:relative;overflow:hidden;opacity:0;animation:fadeIn 1s 1s forwards;}
+.terminal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);}
+.terminal-bar{display:flex;align-items:center;gap:.5rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);background:rgba(0,212,255,0.03);}
+.t-dot{width:10px;height:10px;border-radius:50%;}
+.t-dot:nth-child(1){background:#ff5f57;}
+.t-dot:nth-child(2){background:#febc2e;}
+.t-dot:nth-child(3){background:#28c840;}
+.terminal-title{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--text);margin-left:auto;margin-right:auto;letter-spacing:.1em;}
+.terminal-body{padding:1.5rem;font-family:'Share Tech Mono',monospace;font-size:.72rem;line-height:1.8;color:var(--text);}
+.t-line{display:flex;gap:.8rem;}
+.t-prompt{color:var(--cyan);}
+.t-cmd{color:var(--text-bright);}
+.t-out{color:var(--green);padding-left:1.2rem;}
+.t-key{color:var(--amber);}
+.t-val{color:var(--text-bright);}
+.t-comment{color:#3a5a6e;}
+.typing{overflow:hidden;white-space:nowrap;border-right:2px solid var(--cyan);width:0;animation:typing 2s 1.5s steps(30) forwards,blink-cur .8s step-end infinite;}
+@keyframes typing{to{width:100%;}}
+@keyframes blink-cur{50%{border-color:transparent;}}
+
+/* SECTION BASE */
+section{position:relative;z-index:1;}
+.sec-label{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--cyan);letter-spacing:.3em;text-transform:uppercase;display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;}
+.sec-label::after{content:'';height:1px;flex:1;background:var(--border);}
+.sec-title{font-family:'Orbitron',monospace;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:700;color:var(--text-bright);margin-bottom:1rem;line-height:1.1;}
+.sec-title .accent{color:var(--cyan);}
+
+/* STATS BAR */
+.stats-bar{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:2.5rem 4rem;display:flex;gap:0;position:relative;z-index:1;}
+.stat-item{flex:1;text-align:center;border-right:1px solid var(--border);padding:0 2rem;}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Orbitron',monospace;font-size:2.5rem;font-weight:900;color:var(--cyan);display:block;text-shadow:var(--glow);}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--text);letter-spacing:.15em;text-transform:uppercase;margin-top:.3rem;display:block;}
+
+/* ABOUT / CERTS */
+.about-sec{padding:7rem 4rem;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:start;}
+.about-text p{font-size:1rem;color:var(--text);line-height:1.8;margin-bottom:1.2rem;font-weight:400;}
+.certs-list{display:flex;flex-direction:column;gap:1rem;}
+.cert-card{background:var(--bg2);border:1px solid var(--border);padding:1.2rem 1.5rem;display:flex;align-items:center;gap:1.2rem;transition:border-color .3s,box-shadow .3s;position:relative;overflow:hidden;}
+.cert-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--cyan);transform:scaleY(0);transition:transform .3s;transform-origin:bottom;}
+.cert-card:hover{border-color:var(--cyan);box-shadow:var(--glow);}
+.cert-card:hover::before{transform:scaleY(1);}
+.cert-icon{width:42px;height:42px;border:1px solid var(--cyan-dim);display:flex;align-items:center;justify-content:center;font-family:'Orbitron',monospace;font-size:.6rem;color:var(--cyan);flex-shrink:0;font-weight:700;}
+.cert-name{font-family:'Share Tech Mono',monospace;font-size:.78rem;color:var(--text-bright);display:block;letter-spacing:.05em;}
+.cert-issuer{font-size:.68rem;color:var(--text);margin-top:.2rem;display:block;}
+.cert-year{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:var(--cyan);}
+
+/* SKILLS */
+.skills-sec{padding:7rem 4rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.skills-inner{max-width:1400px;margin:0 auto;}
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;margin-top:4rem;}
+.skill-cat{background:var(--bg);border:1px solid var(--border);padding:2rem;position:relative;transition:border-color .4s;}
+.skill-cat:hover{border-color:var(--cyan);}
+.skill-cat-title{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem;}
+.skill-cat-title svg{width:14px;height:14px;}
+.skill-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+.skill-row:last-child{margin-bottom:0;}
+.sk-name{font-size:.82rem;color:var(--text-bright);font-weight:500;}
+.sk-bar-wrap{width:100px;height:3px;background:rgba(0,212,255,0.1);position:relative;}
+.sk-bar{height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));width:0;transition:width 1.5s cubic-bezier(.25,.46,.45,.94);}
+.sk-pct{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--cyan);width:2.5rem;text-align:right;}
+
+/* PROJECTS */
+.projects-sec{padding:7rem 4rem;max-width:1400px;margin:0 auto;}
+.projects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:4rem;}
+.proj-card{background:var(--bg2);border:1px solid var(--border);padding:2rem;position:relative;overflow:hidden;transition:border-color .4s,transform .3s;cursor:none;}
+.proj-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,0.05),transparent);opacity:0;transition:opacity .4s;}
+.proj-card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:var(--glow);}
+.proj-card:hover::after{opacity:1;}
+.proj-num{font-family:'Orbitron',monospace;font-size:2.5rem;font-weight:900;color:transparent;-webkit-text-stroke:1px rgba(0,212,255,0.2);line-height:1;margin-bottom:1.5rem;}
+.proj-title{font-family:'Rajdhani',sans-serif;font-size:1.15rem;font-weight:700;color:var(--text-bright);margin-bottom:.8rem;letter-spacing:.05em;}
+.proj-desc{font-size:.85rem;color:var(--text);line-height:1.7;margin-bottom:1.5rem;}
+.proj-tags{display:flex;flex-wrap:wrap;gap:.4rem;}
+.proj-tag{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--cyan);border:1px solid var(--cyan-dim);padding:.15rem .5rem;letter-spacing:.05em;}
+.proj-tag.green{color:var(--green);border-color:var(--green-dim);}
+.proj-tag.amber{color:var(--amber);border-color:rgba(255,170,0,0.2);}
+.proj-arrow{position:absolute;top:1.5rem;right:1.5rem;width:30px;height:30px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text);font-size:.8rem;transition:all .3s;opacity:0;}
+.proj-card:hover .proj-arrow{opacity:1;border-color:var(--cyan);color:var(--cyan);}
+
+/* NETWORK DIAGRAM */
+.net-diagram-sec{padding:5rem 4rem;background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.net-diagram-inner{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+.net-canvas-wrap{position:relative;}
+#diagramCanvas{width:100%;border:1px solid var(--border);background:var(--bg);}
+
+/* CONTACT */
+.contact-sec{padding:7rem 4rem;max-width:1400px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:6rem;}
+.contact-info{}
+.contact-links{display:flex;flex-direction:column;gap:1rem;margin-top:2.5rem;}
+.c-link{display:flex;align-items:center;gap:1.2rem;padding:1.2rem 1.5rem;background:var(--bg2);border:1px solid var(--border);text-decoration:none;color:var(--text);transition:all .3s;font-family:'Share Tech Mono',monospace;font-size:.75rem;}
+.c-link:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:var(--glow);}
+.c-icon{width:36px;height:36px;border:1px solid var(--cyan-dim);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:var(--cyan);flex-shrink:0;}
+.contact-form{display:flex;flex-direction:column;gap:1.5rem;}
+.f-group{display:flex;flex-direction:column;gap:.5rem;}
+.f-label{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;}
+.f-input,.f-textarea{background:var(--bg2);border:1px solid var(--border);color:var(--text-bright);font-family:'Rajdhani',sans-serif;font-size:.95rem;padding:.9rem 1rem;outline:none;transition:border-color .3s,box-shadow .3s;resize:none;}
+.f-input:focus,.f-textarea:focus{border-color:var(--cyan);box-shadow:0 0 15px rgba(0,212,255,0.1);}
+.f-textarea{height:120px;}
+.btn-send{background:var(--cyan);color:var(--bg);border:none;padding:1rem 2.5rem;font-family:'Share Tech Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:none;transition:all .3s;position:relative;overflow:hidden;align-self:flex-start;}
+.btn-send:hover{background:var(--green);box-shadow:0 0 30px rgba(0,255,136,0.4);}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:2rem 4rem;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;}
+.f-logo{font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;color:var(--cyan);}
+.f-copy{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--text);letter-spacing:.1em;}
+.f-links{display:flex;gap:2rem;}
+.f-links a{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--text);text-decoration:none;text-transform:uppercase;letter-spacing:.1em;transition:color .3s;}
+.f-links a:hover{color:var(--cyan);}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .7s ease,transform .7s ease;}
+.reveal.in{opacity:1;transform:none;}
+
+/* ANIMATIONS */
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 8px var(--green);}50%{opacity:.5;box-shadow:0 0 3px var(--green);}}
+@keyframes fadeIn{to{opacity:1;}from{opacity:0;}}
+@keyframes blink{50%{opacity:0;}}
+
+/* MOBILE */
+@media(max-width:900px){
+  nav{padding:1.2rem 2rem;}
+  .nav-links{display:none;}
+  .hero{padding:6rem 2rem 4rem;}
+  .hero-inner{grid-template-columns:1fr;}
+  .stats-bar{padding:2rem;flex-wrap:wrap;gap:2rem;}
+  .stat-item{border:none;flex:1 1 40%;}
+  .about-sec,.contact-sec,.net-diagram-inner{grid-template-columns:1fr;gap:3rem;padding:4rem 2rem;}
+  .skills-sec,.projects-sec{padding:4rem 2rem;}
+  .skills-grid,.projects-grid{grid-template-columns:1fr;}
+  footer{flex-direction:column;gap:1rem;padding:2rem;text-align:center;}
+}
+</style>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curRing"></div>
+
+<canvas id="netCanvas"></canvas>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-id">
+    <div class="nav-status"></div>
+    <span class="nav-name">M.ZANIK_NET</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <span class="nav-badge">AVAILABLE FOR HIRE</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <!-- Background Video -->
+  <div class="hero-video-wrap">
+    <video class="hero-video" autoplay muted loop playsinline>
+      <source src="https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_25fps.mp4" type="video/mp4">
+      <source src="https://videos.pexels.com/video-files/2278095/2278095-hd_1920_1080_30fps.mp4" type="video/mp4">
+    </video>
+    <div class="hero-video-overlay"></div>
+  </div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-tag">Senior Network Engineer</div>
+      <h1 class="hero-title">
+        Building<br>
+        <span>Resilient</span><br>
+        Networks<span class="blink">_</span>
+      </h1>
+      <p class="hero-sub">
+        12+ years architecting enterprise infrastructure across cloud, on-prem, and hybrid environments. CCIE certified. Zero downtime. Maximum throughput.
+      </p>
+      <div class="hero-btns">
+        <a href="#projects" class="btn-primary">View Projects</a>
+        <a href="#contact" class="btn-secondary">Get in Touch</a>
+      </div>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+        <span class="terminal-title">network_status.sh</span>
+      </div>
+      <div class="terminal-body">
+        <div class="t-line"><span class="t-prompt">zanik@core-sw01:~$</span><span class="t-cmd typing">show system overview</span></div>
+        <br>
+        <div class="t-line"><span class="t-key">Engineer:&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="t-val">Mohamed Zanik Zuhri, CCIE #58421</span></div>
+        <div class="t-line"><span class="t-key">Role:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="t-val">Senior Network Engineer</span></div>
+        <div class="t-line"><span class="t-key">Location:&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="t-val">San Francisco, CA</span></div>
+        <div class="t-line"><span class="t-key">Experience:&nbsp;&nbsp;</span><span class="t-val">12 years</span></div>
+        <br>
+        <div class="t-line"><span class="t-comment">## Certifications</span></div>
+        <div class="t-line"><span class="t-out">✓ CCIE Enterprise Infrastructure</span></div>
+        <div class="t-line"><span class="t-out">✓ AWS Advanced Networking Specialty</span></div>
+        <div class="t-line"><span class="t-out">✓ Juniper JNCIE-ENT</span></div>
+        <div class="t-line"><span class="t-out">✓ Fortinet NSE 7</span></div>
+        <br>
+        <div class="t-line"><span class="t-key">Status:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span class="t-out">● ONLINE — Ready for deployment</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-num" data-target="12">0</span>
+    <span class="stat-label">Years Experience</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="99">0</span>
+    <span class="stat-label">% Uptime Achieved</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="80">0</span>
+    <span class="stat-label">Network Nodes Managed</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="35">0</span>
+    <span class="stat-label">Enterprise Clients</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" data-target="4">0</span>
+    <span class="stat-label">Major Certifications</span>
+  </div>
+</div>
+
+<!-- ABOUT + CERTS -->
+<div class="about-sec" id="about">
+  <div class="about-text">
+    <div class="sec-label">// ABOUT</div>
+    <h2 class="sec-title">Architecting the <span class="accent">infrastructure</span> behind modern enterprise</h2>
+    <p>I specialize in designing, deploying, and optimizing complex network environments — from SD-WAN and MPLS backbone design to zero-trust security architectures and cloud-native networking on AWS and Azure.</p>
+    <p>My work spans Fortune 500 data centers, multi-site campus networks, and critical government infrastructure. I thrive in high-stakes environments where latency, reliability, and security cannot be compromised.</p>
+    <p>Currently open to senior/lead network architect roles or consulting engagements focused on large-scale cloud migration and network modernization.</p>
+  </div>
+  <div>
+    <div class="sec-label">// CERTIFICATIONS</div>
+    <div class="certs-list">
+      <div class="cert-card reveal">
+        <div class="cert-icon">CCIE</div>
+        <div>
+          <span class="cert-name">CCIE Enterprise Infrastructure</span>
+          <span class="cert-issuer">Cisco Systems · #58421</span>
+        </div>
+        <span class="cert-year">2021</span>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">ANS</div>
+        <div>
+          <span class="cert-name">AWS Advanced Networking Specialty</span>
+          <span class="cert-issuer">Amazon Web Services</span>
+        </div>
+        <span class="cert-year">2023</span>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">JNCIE</div>
+        <div>
+          <span class="cert-name">JNCIE-ENT</span>
+          <span class="cert-issuer">Juniper Networks</span>
+        </div>
+        <span class="cert-year">2020</span>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">NSE7</div>
+        <div>
+          <span class="cert-name">Fortinet NSE 7 – LAN Edge</span>
+          <span class="cert-issuer">Fortinet</span>
+        </div>
+        <span class="cert-year">2022</span>
+      </div>
+      <div class="cert-card reveal">
+        <div class="cert-icon">AZ</div>
+        <div>
+          <span class="cert-name">Azure Network Engineer Associate</span>
+          <span class="cert-issuer">Microsoft</span>
+        </div>
+        <span class="cert-year">2024</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SKILLS -->
+<div class="skills-sec" id="skills">
+  <div class="skills-inner">
+    <div class="sec-label">// TECHNICAL SKILLS</div>
+    <h2 class="sec-title">Core <span class="accent">Competencies</span></h2>
+    <div class="skills-grid">
+
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M1 3h14v2H1V3zm0 4h14v2H1V7zm0 4h14v2H1v-2z"/></svg>
+          Routing & Switching
+        </div>
+        <div class="skill-row"><span class="sk-name">BGP / OSPF / EIGRP</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="97"></div></div><span class="sk-pct">97%</span></div>
+        <div class="skill-row"><span class="sk-name">MPLS / Segment Routing</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="92"></div></div><span class="sk-pct">92%</span></div>
+        <div class="skill-row"><span class="sk-name">SD-WAN (Viptela/Meraki)</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="90"></div></div><span class="sk-pct">90%</span></div>
+        <div class="skill-row"><span class="sk-name">VLANs / STP / 802.1Q</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="98"></div></div><span class="sk-pct">98%</span></div>
+        <div class="skill-row"><span class="sk-name">QoS & Traffic Shaping</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="88"></div></div><span class="sk-pct">88%</span></div>
+      </div>
+
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a7 7 0 100 14A7 7 0 008 1zM3.5 8a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0z"/></svg>
+          Security & Firewalls
+        </div>
+        <div class="skill-row"><span class="sk-name">Palo Alto NGFW</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="93"></div></div><span class="sk-pct">93%</span></div>
+        <div class="skill-row"><span class="sk-name">Fortinet FortiGate</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="91"></div></div><span class="sk-pct">91%</span></div>
+        <div class="skill-row"><span class="sk-name">Zero Trust Architecture</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="85"></div></div><span class="sk-pct">85%</span></div>
+        <div class="skill-row"><span class="sk-name">IPSec / SSL VPN</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="95"></div></div><span class="sk-pct">95%</span></div>
+        <div class="skill-row"><span class="sk-name">IDS/IPS / SOC Integration</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="80"></div></div><span class="sk-pct">80%</span></div>
+      </div>
+
+      <div class="skill-cat reveal">
+        <div class="skill-cat-title">
+          <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6 2h4v2H6V2zm-2 4h8v2H4V6zm1 4h6v2H5v-2z"/></svg>
+          Cloud & Automation
+        </div>
+        <div class="skill-row"><span class="sk-name">AWS VPC / Transit GW</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="89"></div></div><span class="sk-pct">89%</span></div>
+        <div class="skill-row"><span class="sk-name">Azure Virtual WAN</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="84"></div></div><span class="sk-pct">84%</span></div>
+        <div class="skill-row"><span class="sk-name">Python / Ansible</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="82"></div></div><span class="sk-pct">82%</span></div>
+        <div class="skill-row"><span class="sk-name">Terraform (IaC)</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="75"></div></div><span class="sk-pct">75%</span></div>
+        <div class="skill-row"><span class="sk-name">Splunk / NetFlow</span><div class="sk-bar-wrap"><div class="sk-bar" data-w="87"></div></div><span class="sk-pct">87%</span></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PROJECTS -->
+<div class="projects-sec" id="projects">
+  <div class="sec-label">// NOTABLE PROJECTS</div>
+  <h2 class="sec-title">Infrastructure <span class="accent">Deployments</span></h2>
+  <div class="projects-grid">
+
+    <div class="proj-card reveal">
+      <div class="proj-num">01</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">Global SD-WAN Rollout — FinTech Corp</h3>
+      <p class="proj-desc">Designed and deployed a Cisco Viptela SD-WAN solution across 140 branch offices in 22 countries, replacing legacy MPLS and reducing WAN costs by 60% while improving application performance.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">SD-WAN</span>
+        <span class="proj-tag green">Cisco Viptela</span>
+        <span class="proj-tag">BGP</span>
+        <span class="proj-tag amber">140 Sites</span>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">02</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">Zero-Trust Migration — Healthcare Network</h3>
+      <p class="proj-desc">Led HIPAA-compliant zero-trust implementation for a 6,000-user hospital network using Palo Alto Prisma Access, replacing legacy VPN infrastructure with identity-aware segmentation.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">Zero Trust</span>
+        <span class="proj-tag green">Palo Alto Prisma</span>
+        <span class="proj-tag">HIPAA</span>
+        <span class="proj-tag amber">6K Users</span>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">03</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">AWS Multi-Region Hybrid Cloud</h3>
+      <p class="proj-desc">Architected a hybrid cloud network spanning 3 AWS regions with Direct Connect redundancy, Transit Gateway mesh, and automated failover achieving 99.99% SLA for a SaaS provider.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">AWS</span>
+        <span class="proj-tag green">Direct Connect</span>
+        <span class="proj-tag">Transit GW</span>
+        <span class="proj-tag amber">99.99% SLA</span>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">04</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">Data Center Fabric Redesign</h3>
+      <p class="proj-desc">Migrated legacy 3-tier DC architecture to spine-leaf topology using Cisco ACI, enabling microsegmentation, automated provisioning, and reducing east-west latency by 40%.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">Cisco ACI</span>
+        <span class="proj-tag green">Spine-Leaf</span>
+        <span class="proj-tag">VXLAN</span>
+        <span class="proj-tag amber">DC Fabric</span>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">05</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">Network Automation Pipeline</h3>
+      <p class="proj-desc">Built a Python + Ansible + Netbox automation framework for config management, compliance checks, and rapid provisioning — reducing manual config time from hours to under 5 minutes.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">Python</span>
+        <span class="proj-tag green">Ansible</span>
+        <span class="proj-tag">Netbox</span>
+        <span class="proj-tag amber">Automation</span>
+      </div>
+    </div>
+
+    <div class="proj-card reveal">
+      <div class="proj-num">06</div>
+      <div class="proj-arrow">↗</div>
+      <h3 class="proj-title">ISP Peering & BGP Optimization</h3>
+      <p class="proj-desc">Managed internet peering strategy for a regional ISP — established 12 new IXP peering agreements, implemented BGP communities and traffic engineering to optimize inbound/outbound routing.</p>
+      <div class="proj-tags">
+        <span class="proj-tag">BGP</span>
+        <span class="proj-tag green">IXP Peering</span>
+        <span class="proj-tag">ISP</span>
+        <span class="proj-tag amber">Traffic Eng.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- NETWORK DIAGRAM -->
+<div class="net-diagram-sec">
+  <div class="net-diagram-inner">
+    <div>
+      <div class="sec-label">// NETWORK TOPOLOGY</div>
+      <h2 class="sec-title reveal">Live <span class="accent">Architecture</span> Visualization</h2>
+      <p style="font-size:.9rem;color:var(--text);line-height:1.7;margin-top:1rem;" class="reveal">An interactive diagram representing a typical enterprise network topology I design — spanning internet edge, DMZ, core, distribution, and access layers with redundant links and segmentation zones.</p>
+      <div style="margin-top:2rem;display:flex;flex-direction:column;gap:.8rem;" class="reveal">
+        <div style="display:flex;align-items:center;gap:.8rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text);">
+          <div style="width:30px;height:2px;background:var(--cyan);"></div> Core / Backbone Links
+        </div>
+        <div style="display:flex;align-items:center;gap:.8rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text);">
+          <div style="width:30px;height:2px;background:var(--green);"></div> Distribution Links
+        </div>
+        <div style="display:flex;align-items:center;gap:.8rem;font-family:'Share Tech Mono',monospace;font-size:.68rem;color:var(--text);">
+          <div style="width:30px;height:2px;background:var(--amber);background:repeating-linear-gradient(90deg,var(--amber) 0,var(--amber) 6px,transparent 6px,transparent 10px);"></div> Access Links
+        </div>
+      </div>
+    </div>
+    <div class="net-canvas-wrap reveal">
+      <canvas id="diagramCanvas" height="420"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<div class="contact-sec" id="contact">
+  <div class="contact-info">
+    <div class="sec-label">// CONTACT</div>
+    <h2 class="sec-title reveal">Let's <span class="accent">Connect</span></h2>
+    <p style="font-size:.9rem;color:var(--text);line-height:1.7;margin-top:1rem;" class="reveal">Open to senior network architect roles, consulting, and speaking engagements. Reach out — I respond within 24 hours.</p>
+    <div class="contact-links">
+      <a href="mailto:marcus@example.com" class="c-link reveal">
+        <div class="c-icon">@</div>
+        marcus.chen@netpro.io
+      </a>
+      <a href="#" class="c-link reveal">
+        <div class="c-icon">in</div>
+        linkedin.com/in/zanikzuhri
+      </a>
+      <a href="#" class="c-link reveal">
+        <div class="c-icon">gh</div>
+        github.com/zanikzuhri
+      </a>
+      <a href="#" class="c-link reveal">
+        <div class="c-icon">📄</div>
+        Download Resume / CV
+      </a>
+    </div>
+  </div>
+  <form class="contact-form" onsubmit="handleSend(event)">
+    <div class="f-group reveal">
+      <label class="f-label">Your Name</label>
+      <input type="text" class="f-input" placeholder="Jane Smith">
+    </div>
+    <div class="f-group reveal">
+      <label class="f-label">Email</label>
+      <input type="email" class="f-input" placeholder="jane@company.com">
+    </div>
+    <div class="f-group reveal">
+      <label class="f-label">Subject</label>
+      <input type="text" class="f-input" placeholder="Network Architecture Consultation">
+    </div>
+    <div class="f-group reveal">
+      <label class="f-label">Message</label>
+      <textarea class="f-textarea" placeholder="Describe your project or inquiry..."></textarea>
+    </div>
+    <button type="submit" class="btn-send reveal">TRANSMIT MESSAGE →</button>
+  </form>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <span class="f-logo">ZANIK_ZUHRI</span>
+  <span class="f-copy">© 2026 · Mohamed Zanik Zuhri · CCIE #58421 · All rights reserved</span>
+  <div class="f-links">
+    <a href="#">LinkedIn</a>
+    <a href="#">GitHub</a>
+    <a href="#">Twitter</a>
+  </div>
+</footer>
+
+<script>
+// --- CURSOR ---
+const cur = document.getElementById('cur');
+const ring = document.getElementById('curRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+(function anim(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(anim);})();
+document.querySelectorAll('a,button,.proj-card,.cert-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.style.width='16px';cur.style.height='16px';ring.style.width='50px';ring.style.height='50px';ring.style.opacity='.7';});
+  el.addEventListener('mouseleave',()=>{cur.style.width='6px';cur.style.height='6px';ring.style.width='32px';ring.style.height='32px';ring.style.opacity='.4';});
+});
+
+// --- BACKGROUND NETWORK CANVAS ---
+const nc = document.getElementById('netCanvas');
+const nctx = nc.getContext('2d');
+let W,H,nodes=[];
+function resize(){W=nc.width=window.innerWidth;H=nc.height=window.innerHeight;initNodes();}
+function initNodes(){
+  nodes=[];
+  const count=Math.floor(W*H/14000);
+  for(let i=0;i<count;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:Math.random()*1.5+.5});
+}
+function drawNet(){
+  nctx.clearRect(0,0,W,H);
+  for(let i=0;i<nodes.length;i++){
+    let n=nodes[i];
+    n.x+=n.vx; n.y+=n.vy;
+    if(n.x<0||n.x>W)n.vx*=-1;
+    if(n.y<0||n.y>H)n.vy*=-1;
+    nctx.beginPath();
+    nctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+    nctx.fillStyle='rgba(0,212,255,0.6)';
+    nctx.fill();
+    for(let j=i+1;j<nodes.length;j++){
+      let m=nodes[j],dx=n.x-m.x,dy=n.y-m.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<120){
+        nctx.beginPath();
+        nctx.moveTo(n.x,n.y);
+        nctx.lineTo(m.x,m.y);
+        nctx.strokeStyle=`rgba(0,212,255,${(1-d/120)*.2})`;
+        nctx.lineWidth=.5;
+        nctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawNet);
+}
+window.addEventListener('resize',resize);
+resize(); drawNet();
+
+// --- TOPOLOGY DIAGRAM ---
+const dc = document.getElementById('diagramCanvas');
+const dctx = dc.getContext('2d');
+dc.width = dc.parentElement.offsetWidth || 500;
+dc.height = 420;
+
+const topo = {
+  nodes:[
+    {id:'inet',x:.5,y:.05,label:'INTERNET',type:'cloud'},
+    {id:'fw1',x:.3,y:.18,label:'FW-01',type:'fw'},
+    {id:'fw2',x:.7,y:.18,label:'FW-02',type:'fw'},
+    {id:'core1',x:.3,y:.38,label:'CORE-SW1',type:'core'},
+    {id:'core2',x:.7,y:.38,label:'CORE-SW2',type:'core'},
+    {id:'dist1',x:.15,y:.6,label:'DIST-1',type:'dist'},
+    {id:'dist2',x:.5,y:.6,label:'DIST-2',type:'dist'},
+    {id:'dist3',x:.82,y:.6,label:'DIST-3',type:'dist'},
+    {id:'acc1',x:.08,y:.82,label:'ACC-1',type:'acc'},
+    {id:'acc2',x:.25,y:.82,label:'ACC-2',type:'acc'},
+    {id:'acc3',x:.42,y:.82,label:'ACC-3',type:'acc'},
+    {id:'acc4',x:.58,y:.82,label:'ACC-4',type:'acc'},
+    {id:'acc5',x:.75,y:.82,label:'ACC-5',type:'acc'},
+    {id:'acc6',x:.92,y:.82,label:'ACC-6',type:'acc'},
+  ],
+  edges:[
+    {a:'inet',b:'fw1',t:'core'},
+    {a:'inet',b:'fw2',t:'core'},
+    {a:'fw1',b:'core1',t:'core'},
+    {a:'fw1',b:'core2',t:'core'},
+    {a:'fw2',b:'core1',t:'core'},
+    {a:'fw2',b:'core2',t:'core'},
+    {a:'core1',b:'core2',t:'core'},
+    {a:'core1',b:'dist1',t:'dist'},
+    {a:'core1',b:'dist2',t:'dist'},
+    {a:'core2',b:'dist2',t:'dist'},
+    {a:'core2',b:'dist3',t:'dist'},
+    {a:'dist1',b:'acc1',t:'acc'},
+    {a:'dist1',b:'acc2',t:'acc'},
+    {a:'dist2',b:'acc3',t:'acc'},
+    {a:'dist2',b:'acc4',t:'acc'},
+    {a:'dist3',b:'acc5',t:'acc'},
+    {a:'dist3',b:'acc6',t:'acc'},
+  ]
+};
+
+let pulse=0;
+function drawTopo(){
+  const W=dc.width,H=dc.height;
+  dctx.clearRect(0,0,W,H);
+  pulse+=0.04;
+
+  // edges
+  topo.edges.forEach(e=>{
+    const a=topo.nodes.find(n=>n.id===e.a);
+    const b=topo.nodes.find(n=>n.id===e.b);
+    const ax=a.x*W,ay=a.y*H,bx=b.x*W,by=b.y*H;
+    dctx.beginPath();
+    dctx.moveTo(ax,ay);
+    dctx.lineTo(bx,by);
+    if(e.t==='core'){dctx.strokeStyle='rgba(0,212,255,0.5)';dctx.lineWidth=1.5;dctx.setLineDash([]);}
+    else if(e.t==='dist'){dctx.strokeStyle='rgba(0,255,136,0.4)';dctx.lineWidth=1;dctx.setLineDash([]);}
+    else{dctx.strokeStyle='rgba(255,170,0,0.3)';dctx.lineWidth=.8;dctx.setLineDash([4,4]);}
+    dctx.stroke();
+    dctx.setLineDash([]);
+
+    // moving packet
+    const t=(Math.sin(pulse+e.a.charCodeAt(0))*.5+.5);
+    const px=ax+(bx-ax)*t,py=ay+(by-ay)*t;
+    dctx.beginPath();
+    dctx.arc(px,py,2.5,0,Math.PI*2);
+    const col=e.t==='core'?'rgba(0,212,255,0.9)':e.t==='dist'?'rgba(0,255,136,0.9)':'rgba(255,170,0,0.9)';
+    dctx.fillStyle=col;
+    dctx.fill();
+  });
+
+  // nodes
+  topo.nodes.forEach(n=>{
+    const x=n.x*W,y=n.y*H;
+    let col='#00d4ff',sz=8,glow='rgba(0,212,255,0.4)';
+    if(n.type==='cloud'){col='#a8c5d8';sz=12;glow='rgba(168,197,216,0.3)';}
+    else if(n.type==='fw'){col='#ff3355';sz=9;glow='rgba(255,51,85,0.4)';}
+    else if(n.type==='core'){col='#00d4ff';sz=10;glow='rgba(0,212,255,0.5)';}
+    else if(n.type==='dist'){col='#00ff88';sz=8;glow='rgba(0,255,136,0.4)';}
+    else{col='#ffaa00';sz=6;glow='rgba(255,170,0,0.3)';}
+
+    // glow ring
+    const gr=dctx.createRadialGradient(x,y,0,x,y,sz*2.5);
+    gr.addColorStop(0,glow); gr.addColorStop(1,'transparent');
+    dctx.beginPath();dctx.arc(x,y,sz*2.5,0,Math.PI*2);
+    dctx.fillStyle=gr;dctx.fill();
+
+    dctx.beginPath();dctx.arc(x,y,sz,0,Math.PI*2);
+    dctx.fillStyle=col;dctx.fill();
+    dctx.strokeStyle=n.type==='fw'?'#ff3355':'rgba(0,0,0,0.5)';dctx.lineWidth=1.5;dctx.stroke();
+
+    dctx.fillStyle='rgba(212,234,247,0.85)';
+    dctx.font='bold 8px Share Tech Mono,monospace';
+    dctx.textAlign='center';
+    dctx.fillText(n.label,x,y+sz+11);
+  });
+  requestAnimationFrame(drawTopo);
+}
+drawTopo();
+
+// --- SCROLL REVEAL ---
+const revEls=document.querySelectorAll('.reveal');
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('in'),i*60);obs.unobserve(e.target);}});
+},{threshold:.1});
+revEls.forEach(el=>obs.observe(el));
+
+// --- SKILL BARS ---
+const skObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.sk-bar').forEach(b=>b.style.width=b.dataset.w+'%');
+      skObs.unobserve(e.target);
+    }
+  });
+},{threshold:.2});
+document.querySelectorAll('.skill-cat').forEach(el=>skObs.observe(el));
+
+// --- COUNTERS ---
+function counter(el,target,suffix=''){
+  let start=null;
+  function step(ts){
+    if(!start)start=ts;
+    const p=Math.min((ts-start)/1600,1);
+    const ease=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(ease*target)+(p>=1?suffix:'');
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+const cntObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.querySelectorAll('.stat-num').forEach(n=>{
+        const t=parseInt(n.dataset.target);
+        const suf=n.dataset.target==='99'?'.9%':'+';
+        counter(n,t,suf);
+      });
+      cntObs.unobserve(e.target);
+    }
+  });
+},{threshold:.5});
+const sbar=document.querySelector('.stats-bar');
+if(sbar)cntObs.observe(sbar);
+
+// --- FORM ---
+function handleSend(e){
+  e.preventDefault();
+  const btn=e.target.querySelector('.btn-send');
+  btn.textContent='TRANSMISSION COMPLETE ✓';
+  btn.style.background='var(--green)';
+  setTimeout(()=>{btn.textContent='TRANSMIT MESSAGE →';btn.style.background='';},3000);
+}
+</script>
+</body>
+</html>
