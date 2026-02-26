@@ -183,8 +183,8 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(to right, var(--dark) 0%, transparent 35%),
-                linear-gradient(to top, var(--dark) 0%, transparent 30%);
+    /* background: linear-gradient(to right, var(--dark) 0%, transparent 35%),
+                linear-gradient(to top, var(--dark) 0%, transparent 30%); */
     z-index: 1;
   }
   .hero-img-wrap img {
@@ -469,7 +469,7 @@
   }
   .contact-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 2px;
     margin-top: 64px;
     position: relative;
