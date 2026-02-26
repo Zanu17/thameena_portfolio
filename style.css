@@ -334,7 +334,7 @@
     grid-template-columns: repeat(4, 1fr);
     gap: 2px;
   }
-  .skill-card {
+  /* .skill-card {
     background: var(--dark-3);
     padding: 40px 32px;
     position: relative;
@@ -342,6 +342,17 @@
     transition: all 0.4s;
     opacity: 1;
     transform: translateY(0);
+  } */
+  .skill-card {
+    background: var(--dark-3);      /* keeps your background color as fallback */
+    padding: 40px 32px;
+    position: relative;             /* required for absolute video positioning */
+    overflow: hidden;               /* ensures video stays inside card */
+    transition: all 0.4s;
+    opacity: 1;
+    transform: translateY(0);
+    color: white;                   /* ensures text is visible over video */
+    border-radius: 10px;            /* optional: makes corners smooth */
   }
   .skill-card.hidden-anim { opacity: 0; transform: translateY(20px); }
   .skill-card.visible { opacity: 1; transform: translateY(0); }
@@ -612,8 +623,6 @@
       display: none !important;
     }
   }
-
-/* Hero Background Video */
 .hero-video {
   position: absolute;
   inset: 0;
@@ -625,6 +634,7 @@
   pointer-events: none;
   filter: blur(7px);
 }
+
 .hero::after {
   content: "";
   position: absolute;
@@ -632,4 +642,31 @@
   background: rgba(13, 13, 13, 0.7); 
   z-index: 1;
   pointer-events: none;
+}
+/* Skill Background Video */
+.skill-video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;              /* fills the card while maintaining aspect ratio */
+  transform: translate(-50%, -50%);
+  z-index: 0;                     /* behind content */
+  filter: blur(2px);
+  opacity: 0.5;
+}
+.skill-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(13, 13, 13, 0.7); 
+  z-index: 0.5;   
+}
+.skill-card > .skill-content {
+  position: relative;
+  z-index: 1;
 }
