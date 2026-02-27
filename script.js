@@ -94,43 +94,43 @@ document.querySelectorAll(
   revealObserver.observe(el);
 });
 
-document.getElementById("messageForm").addEventListener("submit", async function(e) {
-  e.preventDefault();
+// document.getElementById("messageForm").addEventListener("submit", async function(e) {
+//   e.preventDefault();
 
-  const name = this.name.value;
-  const email = this.email.value;
-  const message = this.message.value;
+//   const name = this.name.value;
+//   const email = this.email.value;
+//   const message = this.message.value;
 
-  const botToken = "YOUR_BOT_TOKEN";
-  const chatId = "YOUR_CHAT_ID";
+//   const botToken = "YOUR_BOT_TOKEN";
+//   const chatId = "YOUR_CHAT_ID";
 
-  const text = `
-📩 New Portfolio Message
+//   const text = `
+// 📩 New Portfolio Message
 
-👤 Name: ${name}
-📧 Email: ${email}
+// 👤 Name: ${name}
+// 📧 Email: ${email}
 
-📝 Message:
-${message}
-  `;
+// 📝 Message:
+// ${message}
+//   `;
 
-  try {
-    await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: text
-      })
-    });
+//   try {
+//     await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json"
+//       },
+//       body: JSON.stringify({
+//         chat_id: chatId,
+//         text: text
+//       })
+//     });
 
-    alert("Message sent successfully!");
-    this.reset();
+//     alert("Message sent successfully!");
+//     this.reset();
 
-  } catch (error) {
-    alert("Error sending message.");
-    console.error(error);
-  }
-});
+//   } catch (error) {
+//     alert("Error sending message.");
+//     console.error(error);
+//   }
+// });
